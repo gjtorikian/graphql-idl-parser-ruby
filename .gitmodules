@@ -1,0 +1,6 @@
+[submodule "ext/graphql-idl-parser"]
+	path = ext/graphql-idl-parser
+	url = git@github.com:gjtorikian/graphql-idl-parser.git
+[submodule "ext/graphql-idl-parser/graphql-idl-parser"]
+	path = ext/graphql-idl-parser/graphql-idl-parser
+	url = git@github.com:gjtorikian/graphql-idl-parser.git
