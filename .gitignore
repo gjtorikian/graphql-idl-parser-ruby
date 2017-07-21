@@ -1,0 +1,16 @@
+_yardoc
+.yardoc
+.DS_Store
+.config
+*.bundle
+*.gif
+*.rbc
+*.so
+.byebug_history
+/vendor/cache/ruby/
+/vendor/gems/
+/vendor/ruby
+bin/
+tmp/
+
+.byebug_history

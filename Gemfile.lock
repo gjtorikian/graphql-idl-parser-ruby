@@ -1,0 +1,37 @@
+PATH
+  remote: .
+  specs:
+    graphql-idl-parser (0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (9.0.6)
+    coderay (1.1.1)
+    method_source (0.8.2)
+    minitest (5.10.2)
+    pry (0.10.4)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-byebug (3.4.2)
+      byebug (~> 9.0)
+      pry (~> 0.10)
+    rake (10.5.0)
+    rake-compiler (0.9.9)
+      rake
+    slop (3.6.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.14)
+  graphql-idl-parser!
+  minitest (~> 5.0)
+  pry-byebug
+  rake (~> 10.0)
+  rake-compiler (~> 0.9)
+
+BUNDLED WITH
+   1.14.3
