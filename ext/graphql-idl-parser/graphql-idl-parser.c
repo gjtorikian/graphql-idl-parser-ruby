@@ -1,7 +1,7 @@
 #include <graphql-idl-parser.h>
 
+static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
-static VALUE rb_cGraphQLIDLParserProcess;
 
 static VALUE GRAPHQLIDLPARSERPROCESS_init(VALUE self)
 {
@@ -10,15 +10,13 @@ static VALUE GRAPHQLIDLPARSERPROCESS_init(VALUE self)
 
 static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 {
-  return INT2NUM(dogcow());
+  return INT2NUM(4);
 }
 
 void Init_graphqlidlparser()
 {
-  rb_cGraphQLIDLParser = rb_define_class("GraphQLIDLParser", rb_cObject);
+  rb_mGraphQL = rb_define_module("GraphQL");
+  rb_cGraphQLIDLParser = rb_define_class_under(rb_mGraphQL, "IDLParser", rb_cObject);
 
-  rb_cGraphQLIDLParserProcess = rb_define_class_under(rb_cGraphQLIDLParser, "Parser", rb_cObject);
-
-  rb_define_method(rb_cGraphQLIDLParserProcess, "initialize", GRAPHQLIDLPARSERPROCESS_init, 0);
-  rb_define_method(rb_cGraphQLIDLParserProcess, "process", GRAPHQLIDLPARSERPROCESS_process, 0);
+  rb_define_method(rb_cGraphQLIDLParser, "process", GRAPHQLIDLPARSERPROCESS_process, 0);
 }

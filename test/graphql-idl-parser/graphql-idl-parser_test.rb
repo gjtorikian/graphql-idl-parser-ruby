@@ -1,16 +1,24 @@
 require 'test_helper'
 
-class GraphQLIDLParserTest < Minitest::Test
-  def test_that_it_has_a_version_number
-    refute_nil ::GraphQLIDLParser::VERSION
-  end
+module GraphQL
+  class IDLParserTest < Minitest::Test
+    def test_it_demands_string_filename
+      assert_raises TypeError do
+        GraphQL::IDLParser.new(43)
+      end
+    end
 
-  def test_it_does_something_useful
-    assert true
-  end
+    def test_it_needs_a_file_that_exists
+      assert_raises ArgumentError do
+        GraphQL::IDLParser.new("not/a/real/file")
+      end
+    end
 
-  def test_it_ffis
-    parser = GraphQLIDLParser.new
-    assert_equal 3, parser.result
+    def test_it_parses_a_basic_schema
+      parser = GraphQL::IDLParser.new(BASIC_FIXTURE)
+      # debugger
+      results = parser.process
+      assert_equal 4, results
+    end
   end
 end

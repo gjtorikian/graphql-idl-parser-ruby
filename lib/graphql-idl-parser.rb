@@ -1,12 +1,18 @@
 require 'graphql-idl-parser/graphqlidlparser'
 require 'graphql-idl-parser/version'
 
-class GraphQLIDLParser
-  def initialize
-    @result = GraphQLIDLParser::Parser.new.process
-  end
+module GraphQL
+  class IDLParser
+    def initialize(filename)
+      unless File.exist?(filename)
+        raise ArgumentError, "#{filename} does not exist!"
+      end
 
-  def result
-    @result
+      unless filename.is_a?(String)
+        raise TypeError, "Expected String, got #{filename.class}"
+      end
+
+      @filename = filename
+    end
   end
 end
