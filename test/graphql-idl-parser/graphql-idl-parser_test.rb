@@ -16,7 +16,6 @@ module GraphQL
 
     def test_it_parses_a_basic_schema
       parser = GraphQL::IDLParser.new(BASIC_FIXTURE)
-      # debugger
       results = parser.process
       assert_equal 4, results
     end

@@ -12,7 +12,7 @@ module GraphQL
         raise TypeError, "Expected String, got #{filename.class}"
       end
 
-      @filename = filename
+      @schema = File.read(filename)
     end
   end
 end

@@ -18,3 +18,9 @@ Rake::ExtensionTask.new('graphql-idl-parser', gem_spec) do |ext|
   ext.name = 'graphqlidlparser'
   ext.lib_dir =  File.join('lib', 'graphql-idl-parser')
 end
+
+desc 'Pretty format C code'
+task :format do
+  puts `astyle --indent=spaces=2 --style=1tbs --keep-one-line-blocks \
+        $(ack -n -f --type=cpp --type=cc ext/graphql-idl-parser/)`
+end
