@@ -3,8 +3,11 @@ language: ruby
 rvm:
   - 2.4.0
 cache:
-  - bundler
-  - cargo
+  directories:
+    - $HOME/.rvm/gems
+    - $HOME/.cargo
+    - $HOME/.multirust
+
 git:
   depth: 10
   submodules: false
@@ -12,6 +15,10 @@ git:
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
+  # Install Rust
+  - if [ ! -e "$HOME/.cargo/bin" ]; then curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain $RUST_VERSION -y; fi
+  - export PATH="$HOME/.cargo/bin:$PATH"
+  - rustup default $RUST_VERSION
 
 script:
   - script/cibuild
