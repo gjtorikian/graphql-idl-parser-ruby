@@ -8,6 +8,10 @@ cache:
     - $HOME/.cargo
     - $HOME/.multirust
 
+env:
+  global:
+    - RUST_VERSION=stable
+
 git:
   depth: 10
   submodules: false
