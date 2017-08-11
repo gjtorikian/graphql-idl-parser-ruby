@@ -29,12 +29,12 @@ module GraphQL
     end
 
     def test_it_has_a_sanity_check
-      contents = ""
+      contents = ''
       Dir.glob("#{RUST_FIXTURES_DIR}/**/*.graphql").each do |schema|
         contents += File.read(schema)
       end
-      # parser = GraphQL::IDLParser.new(contents)
-      #parser.process
+      parser = GraphQL::IDLParser.new(schema: contents)
+      parser.process
     end
   end
 end

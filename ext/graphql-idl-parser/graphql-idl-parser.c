@@ -4,12 +4,15 @@ static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
 
 VALUE convert_string(const char* c_string) {
+  VALUE rb_string;
+  int enc;
+
   if (c_string == NULL) {
     return Qnil;
   }
 
-  VALUE rb_string = rb_str_new2(c_string);
-  int enc = rb_enc_find_index("UTF-8");
+  rb_string = rb_str_new2(c_string);
+  enc = rb_enc_find_index("UTF-8");
   rb_enc_associate_index(rb_string, enc);
 
   return rb_string;
@@ -17,11 +20,13 @@ VALUE convert_string(const char* c_string) {
 
 VALUE convert_array_of_strings(struct array_of_strings c_array_of_strings) {
   VALUE rb_array = rb_ary_new();
+  size_t i;
+
   if (c_array_of_strings.length == 0) {
     return rb_array;
   }
 
-  for (size_t i = 0; i < c_array_of_strings.length; i++) {
+  for (i = 0; i < c_array_of_strings.length; i++) {
     rb_ary_push(rb_array, convert_string(c_array_of_strings.data[i]));
   }
 
@@ -39,11 +44,14 @@ VALUE convert_type_info(struct FieldType c_field_type) {
 
 VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments) {
   VALUE rb_array = rb_ary_new();
+  VALUE rb_hash;
+  size_t i;
+
   if (c_array_of_arguments.length == 0) {
     return rb_array;
   }
 
-  for (size_t i = 0; i < c_array_of_arguments.length; i++) {
+  for (i = 0; i < c_array_of_arguments.length; i++) {
     VALUE rb_hash = rb_hash_new();
 
     rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_arguments.data[i].name));
@@ -58,12 +66,16 @@ VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments)
 
 VALUE convert_array_of_fields(struct array_of_fields c_array_of_fields) {
   VALUE rb_array = rb_ary_new();
+  VALUE rb_hash;
+  size_t i;
+
   if (c_array_of_fields.length == 0) {
     return rb_array;
   }
 
   for (size_t i = 0; i < c_array_of_fields.length; i++) {
-    VALUE rb_hash = rb_hash_new();
+    rb_hash = rb_hash_new();
+
     rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_fields.data[i].name));
     rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(c_array_of_fields.data[i].description));
     rb_hash_aset(rb_hash, CSTR2SYM("type_info"), convert_type_info(c_array_of_fields.data[i].type_info));
@@ -79,12 +91,15 @@ VALUE convert_array_of_fields(struct array_of_fields c_array_of_fields) {
 
 VALUE convert_array_of_values(struct array_of_values c_array_of_values) {
   VALUE rb_array = rb_ary_new();
+  VALUE rb_hash;
+  size_t i;
+
   if (c_array_of_values.length == 0) {
     return rb_array;
   }
 
-  for (size_t i = 0; i < c_array_of_values.length; i++) {
-    VALUE rb_hash = rb_hash_new();
+  for (i = 0; i < c_array_of_values.length; i++) {
+    rb_hash = rb_hash_new();
     rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_values.data[i].name));
     rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(c_array_of_values.data[i].description));
 
@@ -101,8 +116,8 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
   GraphQLTypes* types = NULL;
   size_t types_len = 0;
   uint8_t err;
-
-  VALUE rb_definitions = rb_ary_new();
+  VALUE rb_definitions;
+  VALUE rb_hash;
 
   err = gqlidl_parse_schema(schema, &types, &types_len);
 
@@ -111,8 +126,10 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
     exit(err);
   }
 
+  rb_definitions = rb_ary_new();
+
   for (size_t i = 0; i < types_len; i++) {
-    VALUE rb_hash = rb_hash_new();
+    rb_hash = rb_hash_new();
     if (strcmp(types[i].typename, "scalar") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].scalar_type.name));
