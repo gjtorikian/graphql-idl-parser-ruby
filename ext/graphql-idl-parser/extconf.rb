@@ -30,7 +30,9 @@ if !system('cargo --version') || !system('rustc --version')
   raise '\n\n\n[ERROR]: You have to install Rust with Cargo (https://www.rust-lang.org/)'
 end
 
-`cargo build --release --manifest-path #{File.join(FFI_DIR, 'Cargo.toml')}`
+type = ENV['TRAVIS'] ? '--release' : ''
+
+`cargo build #{type} --manifest-path #{File.join(FFI_DIR, 'Cargo.toml')}`
 
 HEADER_DIRS = [INCLUDEDIR, HEADER_DIR]
 LIB_DIRS = [LIBDIR]
