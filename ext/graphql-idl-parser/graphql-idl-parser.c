@@ -3,11 +3,6 @@
 static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
 
-static VALUE GRAPHQLIDLPARSERPROCESS_init(VALUE self)
-{
-  return self;
-}
-
 static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 {
   VALUE rb_schema = rb_iv_get(self, "@schema");
@@ -15,6 +10,8 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
   GraphQLTypes* types = NULL;
   size_t types_len = 0;
   uint8_t err;
+
+  VALUE rb_definitions = rb_ary_new();
 
   err = gqlidl_parse_schema(schema, &types, &types_len);
 
@@ -24,10 +21,19 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
   }
 
   for (size_t i = 0; i < types_len; i++) {
-    printf("typename: %s\n", types[i].typename);
+    VALUE rb_hash = rb_hash_new();
+    if (strcmp(types[i].typename, "scalar") == 0) {
+      rb_hash_aset(rb_hash, CSTR2SYM("typename"), rb_str_new2(types[i].typename));
+    }
+    else {
+      printf("Error: Unknown type %s", types[i].typename);
+      exit(1);
+    }
+
+    rb_ary_push(rb_definitions, rb_hash);
   }
 
-  return INT2NUM(4);
+  return rb_definitions;
 }
 
 void Init_graphqlidlparser()

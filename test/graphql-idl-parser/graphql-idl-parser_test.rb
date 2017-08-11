@@ -17,7 +17,7 @@ module GraphQL
     def test_it_parses_a_basic_schema
       parser = GraphQL::IDLParser.new(BASIC_FIXTURE)
       results = parser.process
-      assert_equal 4, results
+      assert_equal [{ :typename => "scalar" }, { :typename => "scalar" }], results
     end
   end
 end
