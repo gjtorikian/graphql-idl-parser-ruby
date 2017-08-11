@@ -41,7 +41,7 @@ LIB_DIRS = [LIBDIR]
 
 dir_config('graphql-idl-parser', HEADER_DIRS, LIB_DIRS)
 
-find_header('mtex2MML.h', HEADER_DIR)
+find_header('gql-idl-parser.h', HEADER_DIR)
 
 flag = ENV['TRAVIS'] ? '-O0' : '-O2'
 
