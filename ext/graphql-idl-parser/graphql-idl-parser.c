@@ -4,7 +4,7 @@ static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
 
 VALUE convert_string(const char* c_string) {
-  if (strncmp(c_string, "", 1) == 0) {
+  if (c_string == NULL) {
     return Qnil;
   }
 
@@ -77,6 +77,23 @@ VALUE convert_array_of_fields(struct array_of_fields c_array_of_fields) {
   return rb_array;
 }
 
+VALUE convert_array_of_values(struct array_of_values c_array_of_values) {
+  VALUE rb_array = rb_ary_new();
+  if (c_array_of_values.length == 0) {
+    return rb_array;
+  }
+
+  for (size_t i = 0; i < c_array_of_values.length; i++) {
+    VALUE rb_hash = rb_hash_new();
+    rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_values.data[i].name));
+    rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(c_array_of_values.data[i].description));
+
+    rb_ary_push(rb_array, rb_hash);
+  }
+
+  return rb_array;
+}
+
 static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 {
   VALUE rb_schema = rb_iv_get(self, "@schema");
@@ -107,6 +124,12 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].object_type.description));
       rb_hash_aset(rb_hash, CSTR2SYM("implements"), convert_array_of_strings(types[i].object_type.implements));
       rb_hash_aset(rb_hash, CSTR2SYM("fields"), convert_array_of_fields(types[i].object_type.fields));
+    }
+    else if (strcmp(types[i].typename, "enum") == 0) {
+      rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
+      rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].enum_type.name));
+      rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].enum_type.description));
+      rb_hash_aset(rb_hash, CSTR2SYM("values"), convert_array_of_values(types[i].enum_type.values));
     }
     else {
       printf("\nError: Unknown type %s\n", types[i].typename);

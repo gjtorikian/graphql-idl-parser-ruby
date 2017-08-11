@@ -73,7 +73,7 @@ module GraphQL
       assert_equal 'Returns the elements in the list that come after the specified global ID.', results[10][:fields][0][:arguments][0][:description]
       assert_equal 'after', results[10][:fields][0][:arguments][0][:name]
       assert_equal 'String', results[10][:fields][0][:arguments][0][:type_info][:name]
-      assert_nil results[10][:fields][0][:arguments][0][:type_info][:info]
+      assert_equal '', results[10][:fields][0][:arguments][0][:type_info][:info]
       assert_equal 'Returns the first _n_ elements from the list.', results[10][:fields][0][:arguments][1][:description]
       assert_equal 'first', results[10][:fields][0][:arguments][1][:name]
       assert_equal 'Int', results[10][:fields][0][:arguments][1][:type_info][:name]
