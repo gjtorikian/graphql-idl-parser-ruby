@@ -3,6 +3,14 @@
 static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
 
+VALUE check_for_string(const char* string) {
+  if (strncmp(string, "", 1) == 0) {
+    return Qnil;
+  }
+
+  return rb_str_new2(string);
+}
+
 static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 {
   VALUE rb_schema = rb_iv_get(self, "@schema");
@@ -24,6 +32,8 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
     VALUE rb_hash = rb_hash_new();
     if (strcmp(types[i].typename, "scalar") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), rb_str_new2(types[i].typename));
+      rb_hash_aset(rb_hash, CSTR2SYM("name"), rb_str_new2(types[i].scalar_type.name));
+      rb_hash_aset(rb_hash, CSTR2SYM("description"), check_for_string(types[i].scalar_type.description));
     }
     else {
       printf("Error: Unknown type %s", types[i].typename);
