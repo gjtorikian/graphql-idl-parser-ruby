@@ -143,6 +143,12 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].union_type.description));
       rb_hash_aset(rb_hash, CSTR2SYM("values"), convert_array_of_strings(types[i].union_type.values));
     }
+    else if (strcmp(types[i].typename, "input_object") == 0) {
+      rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
+      rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].input_object_type.name));
+      rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].input_object_type.description));
+      rb_hash_aset(rb_hash, CSTR2SYM("fields"), convert_array_of_fields(types[i].input_object_type.fields));
+    }
     else {
       printf("\nError: Unknown type %s\n", types[i].typename);
       exit(1);
