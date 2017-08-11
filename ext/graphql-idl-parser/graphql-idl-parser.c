@@ -3,12 +3,78 @@
 static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
 
-VALUE check_for_string(const char* string) {
-  if (strncmp(string, "", 1) == 0) {
+VALUE convert_string(const char* c_string) {
+  if (strncmp(c_string, "", 1) == 0) {
     return Qnil;
   }
 
-  return rb_str_new2(string);
+  VALUE rb_string = rb_str_new2(c_string);
+  int enc = rb_enc_find_index("UTF-8");
+  rb_enc_associate_index(rb_string, enc);
+
+  return rb_string;
+}
+
+VALUE convert_array_of_strings(struct array_of_strings c_array_of_strings) {
+  VALUE rb_array = rb_ary_new();
+  if (c_array_of_strings.length == 0) {
+    return rb_array;
+  }
+
+  for (size_t i = 0; i < c_array_of_strings.length; i++) {
+    rb_ary_push(rb_array, convert_string(c_array_of_strings.data[i]));
+  }
+
+  return rb_array;
+}
+
+VALUE convert_type_info(struct FieldType c_field_type) {
+  VALUE rb_hash = rb_hash_new();
+
+  rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_field_type.name));
+  rb_hash_aset(rb_hash, CSTR2SYM("info"), convert_string(c_field_type.info));
+
+  return rb_hash;
+}
+
+VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments) {
+  VALUE rb_array = rb_ary_new();
+  if (c_array_of_arguments.length == 0) {
+    return rb_array;
+  }
+
+  for (size_t i = 0; i < c_array_of_arguments.length; i++) {
+    VALUE rb_hash = rb_hash_new();
+
+    rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_arguments.data[i].name));
+    rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(c_array_of_arguments.data[i].description));
+    rb_hash_aset(rb_hash, CSTR2SYM("type_info"), convert_type_info(c_array_of_arguments.data[i].type_info));
+
+    rb_ary_push(rb_array, rb_hash);
+  }
+
+  return rb_array;
+}
+
+VALUE convert_array_of_fields(struct array_of_fields c_array_of_fields) {
+  VALUE rb_array = rb_ary_new();
+  if (c_array_of_fields.length == 0) {
+    return rb_array;
+  }
+
+  for (size_t i = 0; i < c_array_of_fields.length; i++) {
+    VALUE rb_hash = rb_hash_new();
+    rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_fields.data[i].name));
+    rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(c_array_of_fields.data[i].description));
+    rb_hash_aset(rb_hash, CSTR2SYM("type_info"), convert_type_info(c_array_of_fields.data[i].type_info));
+    rb_hash_aset(rb_hash, CSTR2SYM("arguments"), convert_array_of_arguments(c_array_of_fields.data[i].arguments));
+    rb_hash_aset(rb_hash, CSTR2SYM("deprecated"), c_array_of_fields.data[i].deprecated ? Qtrue : Qfalse);
+    rb_hash_aset(rb_hash, CSTR2SYM("deprecation_reason"), convert_string(c_array_of_fields.data[i].deprecation_reason));
+
+    rb_ary_push(rb_array, rb_hash);
+  }
+
+  return rb_array;
 }
 
 static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
@@ -31,12 +97,19 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
   for (size_t i = 0; i < types_len; i++) {
     VALUE rb_hash = rb_hash_new();
     if (strcmp(types[i].typename, "scalar") == 0) {
-      rb_hash_aset(rb_hash, CSTR2SYM("typename"), rb_str_new2(types[i].typename));
-      rb_hash_aset(rb_hash, CSTR2SYM("name"), rb_str_new2(types[i].scalar_type.name));
-      rb_hash_aset(rb_hash, CSTR2SYM("description"), check_for_string(types[i].scalar_type.description));
+      rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
+      rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].scalar_type.name));
+      rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].scalar_type.description));
+    }
+    else if (strcmp(types[i].typename, "object") == 0) {
+      rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
+      rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].object_type.name));
+      rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].object_type.description));
+      rb_hash_aset(rb_hash, CSTR2SYM("implements"), convert_array_of_strings(types[i].object_type.implements));
+      rb_hash_aset(rb_hash, CSTR2SYM("fields"), convert_array_of_fields(types[i].object_type.fields));
     }
     else {
-      printf("Error: Unknown type %s", types[i].typename);
+      printf("\nError: Unknown type %s\n", types[i].typename);
       exit(1);
     }
 

@@ -8,6 +8,7 @@
 #define CSTR2SYM(s) (ID2SYM(rb_intern((s))))
 
 #include "ruby.h"
+#include <ruby/encoding.h>
 #include "gql-idl-parser.h"
 
 #endif
