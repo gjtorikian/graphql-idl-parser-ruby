@@ -21,7 +21,7 @@ end
 
 desc 'Pretty format C code'
 task :format do
-  puts `astyle --indent=spaces=2 --style=1tbs --keep-one-line-blocks \
+  puts `astyle --indent=spaces=2 --style=1tbs --keep-one-line-blocks -n \
         $(ack -n -f --type=cpp --type=cc ext/graphql-idl-parser/)`
 end
 

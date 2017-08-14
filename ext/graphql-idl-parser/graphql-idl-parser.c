@@ -3,7 +3,8 @@
 static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
 
-VALUE convert_string(const char* c_string) {
+VALUE convert_string(const char* c_string)
+{
   VALUE rb_string;
   int enc;
 
@@ -18,7 +19,8 @@ VALUE convert_string(const char* c_string) {
   return rb_string;
 }
 
-VALUE convert_type_info(struct FieldType c_field_type) {
+VALUE convert_type_info(struct FieldType c_field_type)
+{
   VALUE rb_hash = rb_hash_new();
 
   rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_field_type.name));
@@ -27,7 +29,8 @@ VALUE convert_type_info(struct FieldType c_field_type) {
   return rb_hash;
 }
 
-VALUE convert_array_of_strings(struct array_of_strings c_array_of_strings) {
+VALUE convert_array_of_strings(struct array_of_strings c_array_of_strings)
+{
   VALUE rb_array = rb_ary_new();
   size_t i;
 
@@ -42,7 +45,8 @@ VALUE convert_array_of_strings(struct array_of_strings c_array_of_strings) {
   return rb_array;
 }
 
-VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments) {
+VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments)
+{
   VALUE rb_array = rb_ary_new();
   VALUE rb_hash;
   size_t i;
@@ -66,7 +70,8 @@ VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments)
   return rb_array;
 }
 
-VALUE convert_array_of_fields(struct array_of_fields c_array_of_fields) {
+VALUE convert_array_of_fields(struct array_of_fields c_array_of_fields)
+{
   VALUE rb_array = rb_ary_new();
   VALUE rb_hash;
   size_t i;
@@ -90,7 +95,8 @@ VALUE convert_array_of_fields(struct array_of_fields c_array_of_fields) {
   return rb_array;
 }
 
-VALUE convert_array_of_values(struct array_of_values c_array_of_values) {
+VALUE convert_array_of_values(struct array_of_values c_array_of_values)
+{
   VALUE rb_array = rb_ary_new();
   VALUE rb_hash;
   size_t i;
@@ -111,7 +117,8 @@ VALUE convert_array_of_values(struct array_of_values c_array_of_values) {
   return rb_array;
 }
 
-VALUE convert_array_of_directives(struct array_of_directives c_array_of_directives) {
+VALUE convert_array_of_directives(struct array_of_directives c_array_of_directives)
+{
   VALUE rb_array = rb_ary_new();
   VALUE rb_hash;
   VALUE rb_arguments_array;
@@ -170,44 +177,38 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].scalar_type.name));
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].scalar_type.description));
-    }
-    else if (strcmp(types[i].typename, "object") == 0) {
+    } else if (strcmp(types[i].typename, "object") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].object_type.description));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].object_type.name));
       rb_hash_aset(rb_hash, CSTR2SYM("implements"), convert_array_of_strings(types[i].object_type.implements));
       rb_hash_aset(rb_hash, CSTR2SYM("directives"), convert_array_of_directives(types[i].object_type.directives));
       rb_hash_aset(rb_hash, CSTR2SYM("fields"), convert_array_of_fields(types[i].object_type.fields));
-    }
-    else if (strcmp(types[i].typename, "enum") == 0) {
+    } else if (strcmp(types[i].typename, "enum") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].enum_type.description));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].enum_type.name));
       rb_hash_aset(rb_hash, CSTR2SYM("directives"), convert_array_of_directives(types[i].enum_type.directives));
       rb_hash_aset(rb_hash, CSTR2SYM("values"), convert_array_of_values(types[i].enum_type.values));
-    }
-    else if (strcmp(types[i].typename, "interface") == 0) {
+    } else if (strcmp(types[i].typename, "interface") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].interface_type.description));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].interface_type.name));
       rb_hash_aset(rb_hash, CSTR2SYM("directives"), convert_array_of_directives(types[i].interface_type.directives));
       rb_hash_aset(rb_hash, CSTR2SYM("fields"), convert_array_of_fields(types[i].interface_type.fields));
-    }
-    else if (strcmp(types[i].typename, "union") == 0) {
+    } else if (strcmp(types[i].typename, "union") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].union_type.description));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].union_type.name));
       rb_hash_aset(rb_hash, CSTR2SYM("directives"), convert_array_of_directives(types[i].union_type.directives));
       rb_hash_aset(rb_hash, CSTR2SYM("values"), convert_array_of_strings(types[i].union_type.values));
-    }
-    else if (strcmp(types[i].typename, "input_object") == 0) {
+    } else if (strcmp(types[i].typename, "input_object") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(types[i].input_object_type.description));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].input_object_type.name));
       rb_hash_aset(rb_hash, CSTR2SYM("directives"), convert_array_of_directives(types[i].input_object_type.directives));
       rb_hash_aset(rb_hash, CSTR2SYM("fields"), convert_array_of_fields(types[i].input_object_type.fields));
-    }
-    else {
+    } else {
       printf("\nError: Unknown type %s\n", types[i].typename);
       exit(1);
     }
