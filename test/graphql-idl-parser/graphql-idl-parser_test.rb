@@ -34,13 +34,15 @@ module GraphQL
         contents += File.read(schema)
       end
       parser = GraphQL::IDLParser.new(schema: contents)
-      parser.process
+      result = parser.process
+      refute_empty result.types
     end
 
     def test_it_has_a_github_sanity_check
       contents = File.read("#{RUST_FIXTURES_DIR}/github.graphql")
       parser = GraphQL::IDLParser.new(schema: contents)
-      parser.process
+      result = parser.process
+      refute_empty result.types
     end
   end
 end

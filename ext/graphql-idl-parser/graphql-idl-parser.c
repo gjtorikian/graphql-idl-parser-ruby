@@ -2,6 +2,7 @@
 
 static VALUE rb_mGraphQL;
 static VALUE rb_cGraphQLIDLParser;
+static VALUE rb_cResult;
 
 VALUE convert_string(const char* c_string)
 {
@@ -154,7 +155,8 @@ VALUE convert_array_of_directives(struct array_of_directives c_array_of_directiv
 static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 {
   VALUE rb_schema = rb_iv_get(self, "@schema");
-  VALUE rb_definitions;
+  VALUE rb_result = rb_obj_alloc(rb_cResult);
+  VALUE rb_types;
   VALUE rb_hash;
   GraphQLTypes* types = NULL;
   size_t types_len = 0;
@@ -168,7 +170,10 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
     exit(err);
   }
 
-  rb_definitions = rb_ary_new();
+  rb_types = rb_ary_new();
+
+  // attr_reader :types
+  rb_define_attr(rb_cResult, "types", 1, 0);
 
   for (size_t i = 0; i < types_len; i++) {
     rb_hash = rb_hash_new();
@@ -213,10 +218,11 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
       exit(1);
     }
 
-    rb_ary_push(rb_definitions, rb_hash);
+    rb_ary_push(rb_types, rb_hash);
   }
 
-  return rb_definitions;
+  rb_iv_set(rb_result, "@types", rb_types);
+  return rb_result;
 }
 
 void Init_graphqlidlparser()
@@ -225,4 +231,6 @@ void Init_graphqlidlparser()
   rb_cGraphQLIDLParser = rb_define_class_under(rb_mGraphQL, "IDLParser", rb_cObject);
 
   rb_define_method(rb_cGraphQLIDLParser, "process", GRAPHQLIDLPARSERPROCESS_process, 0);
+
+  rb_cResult = rb_define_class_under(rb_cGraphQLIDLParser, "Result", rb_cObject);
 }
