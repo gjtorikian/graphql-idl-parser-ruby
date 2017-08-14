@@ -14,7 +14,7 @@ module GraphQL
 
     def test_it_needs_a_file_that_exists
       assert_raises ArgumentError do
-        GraphQL::IDLParser.new(filename: "not/a/real/file")
+        GraphQL::IDLParser.new(filename: 'not/a/real/file')
       end
     end
 
