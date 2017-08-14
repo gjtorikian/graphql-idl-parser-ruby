@@ -35,7 +35,7 @@ module GraphQL
       assert_equal 1, results[4][:fields].count
       assert_equal 'body', results[4][:fields][0][:name]
       assert_nil results[4][:fields][0][:description]
-      assert_equal false, results[4][:fields][0][:deprecated]
+      assert_equal 0, results[4][:fields][0][:directives].length
 
       assert_equal results[5][:typename], 'object'
       assert_equal 'The Code of Conduct for a repository', results[5][:description]
@@ -43,7 +43,7 @@ module GraphQL
       assert_equal 1, results[5][:fields].count
       assert_equal 'body', results[5][:fields][0][:name]
       assert_equal 'The body of the CoC', results[5][:fields][0][:description]
-      assert_equal false, results[5][:fields][0][:deprecated]
+      assert_equal 0, results[4][:fields][0][:directives].length
 
       assert_equal results[6][:typename], 'object'
       assert_equal 'key', results[6][:fields][0][:name]
@@ -81,13 +81,24 @@ module GraphQL
 
       assert_equal results[11][:typename], 'object'
       assert_equal 'User', results[11][:name]
-      assert_equal true, results[11][:fields][0][:deprecated]
-      assert_nil results[11][:fields][0][:deprecation_reason]
+      assert_equal 1, results[11][:fields][0][:directives].length
+      assert_equal 'deprecated', results[11][:fields][0][:directives][0][:name]
+      assert_equal 0, results[11][:fields][0][:directives][0][:arguments].length
 
       assert_equal results[12][:typename], 'object'
-      assert_equal 'User', results[12][:name]
-      assert_equal true, results[12][:fields][0][:deprecated]
-      assert_equal 'Exposed database IDs will eventually be removed in favor of global Relay IDs.', results[12][:fields][0][:deprecation_reason]
+      assert_equal 'Issue', results[12][:name]
+      assert_equal 'deprecated', results[12][:fields][0][:directives][0][:name]
+      assert_equal 1, results[12][:fields][0][:directives][0][:arguments].length
+      assert_equal 'reason', results[12][:fields][0][:directives][0][:arguments][0][:name]
+      assert_equal 'Exposed database IDs will eventually be removed in favor of global Relay IDs.', results[12][:fields][0][:directives][0][:arguments][0][:value]
+
+      assert_equal 1, results[13][:fields].length
+      assert_equal 'childTeams', results[13][:fields][0][:name]
+      assert_equal 1, results[13][:fields][0][:arguments].length
+      assert_equal 'immediateOnly', results[13][:fields][0][:arguments][0][:name]
+      assert_equal 'Boolean', results[13][:fields][0][:arguments][0][:type_info][:name]
+      assert_equal '', results[13][:fields][0][:arguments][0][:type_info][:info]
+      assert_equal 'true', results[13][:fields][0][:arguments][0][:default_value]
     end
   end
 end
