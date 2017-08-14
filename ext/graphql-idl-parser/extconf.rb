@@ -34,14 +34,15 @@ type = ENV['TRAVIS'] ? '' : '--release'
 
 `cargo build #{type} --manifest-path #{File.join(FFI_DIR, 'Cargo.toml')}`
 
+$LIBS << ' -lgraphqlidlparser'
+
 HEADER_DIRS = [INCLUDEDIR, HEADER_DIR]
-LIB_DIRS = [LIBDIR]
+LIB_DIRS = [LIBDIR, RELEASE_DIR]
 
 dir_config('graphql-idl-parser', HEADER_DIRS, LIB_DIRS)
 
 flag = ENV['TRAVIS'] ? '-O0' : '-O2'
 
-$LDFLAGS << " -L#{RELEASE_DIR} -lgraphqlidlparser"
 $CFLAGS << " #{flag} -std=c11 -Wall -pedantic -Werror -Wfatal-errors -Wstrict-aliasing"
 
 create_makefile('graphql-idl-parser/graphqlidlparser')
