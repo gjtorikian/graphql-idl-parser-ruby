@@ -44,6 +44,7 @@ VALUE convert_array_of_strings(struct array_of_strings c_array_of_strings) {
 
 VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments) {
   VALUE rb_array = rb_ary_new();
+  VALUE rb_hash;
   size_t i;
 
   if (c_array_of_arguments.length == 0) {
@@ -51,7 +52,7 @@ VALUE convert_array_of_arguments(struct array_of_arguments c_array_of_arguments)
   }
 
   for (i = 0; i < c_array_of_arguments.length; i++) {
-    VALUE rb_hash = rb_hash_new();
+    rb_hash = rb_hash_new();
 
     rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_arguments.data[i].name));
     rb_hash_aset(rb_hash, CSTR2SYM("description"), convert_string(c_array_of_arguments.data[i].description));
@@ -112,6 +113,10 @@ VALUE convert_array_of_values(struct array_of_values c_array_of_values) {
 
 VALUE convert_array_of_directives(struct array_of_directives c_array_of_directives) {
   VALUE rb_array = rb_ary_new();
+  VALUE rb_hash;
+  VALUE rb_arguments_array;
+  VALUE rb_arguments_hash;
+
   size_t i, j;
 
   if (c_array_of_directives.length == 0) {
@@ -119,14 +124,14 @@ VALUE convert_array_of_directives(struct array_of_directives c_array_of_directiv
   }
 
   for (i = 0; i < c_array_of_directives.length; i++) {
-    VALUE rb_hash = rb_hash_new();
-    VALUE rb_arguments_array = rb_ary_new();
+    rb_hash = rb_hash_new();
+    rb_arguments_array = rb_ary_new();
 
     rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(c_array_of_directives.data[i].name));
     rb_hash_aset(rb_hash, CSTR2SYM("arguments"), rb_arguments_array);
 
     for (j = 0; j < c_array_of_directives.data[i].arguments.length; j++) {
-      VALUE rb_arguments_hash = rb_hash_new();
+      rb_arguments_hash = rb_hash_new();
       rb_hash_aset(rb_arguments_hash, CSTR2SYM("name"), convert_string(c_array_of_directives.data[i].arguments.data[j].name));
       rb_hash_aset(rb_arguments_hash, CSTR2SYM("value"), convert_string(c_array_of_directives.data[i].arguments.data[j].value));
 
@@ -142,12 +147,12 @@ VALUE convert_array_of_directives(struct array_of_directives c_array_of_directiv
 static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 {
   VALUE rb_schema = rb_iv_get(self, "@schema");
-  const char *schema = StringValueCStr(rb_schema);
+  VALUE rb_definitions;
+  VALUE rb_hash;
   GraphQLTypes* types = NULL;
   size_t types_len = 0;
   uint8_t err;
-  VALUE rb_definitions;
-  VALUE rb_hash;
+  const char *schema = StringValueCStr(rb_schema);
 
   err = gqlidl_parse_schema(schema, &types, &types_len);
 
@@ -160,6 +165,7 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 
   for (size_t i = 0; i < types_len; i++) {
     rb_hash = rb_hash_new();
+
     if (strcmp(types[i].typename, "scalar") == 0) {
       rb_hash_aset(rb_hash, CSTR2SYM("typename"), convert_string(types[i].typename));
       rb_hash_aset(rb_hash, CSTR2SYM("name"), convert_string(types[i].scalar_type.name));
