@@ -12,6 +12,7 @@ _yardoc
 /vendor/ruby
 bin/
 tmp/
+pkg/
 /Gemfile.lock
 
 .byebug_history
