@@ -172,7 +172,7 @@ static VALUE GRAPHQLIDLPARSERPROCESS_process(VALUE self)
 
   rb_types = rb_ary_new();
 
-  // attr_reader :types
+  /* attr_reader :types */
   rb_define_attr(rb_cResult, "types", 1, 0);
 
   for (size_t i = 0; i < types_len; i++) {
