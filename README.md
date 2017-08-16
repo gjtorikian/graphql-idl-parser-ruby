@@ -33,3 +33,20 @@ parser = GraphQL::IDLParser.new(schema: contents)
 # execute!
 results = parser.process
 ```
+
+## Benchmarks
+
+Check it out with `bundle exec rake benchmark`:
+
+```
+Warming up --------------------------------------
+           pure ruby     1.000  i/100ms
+           this gem      7.000  i/100ms
+Calculating -------------------------------------
+           pure ruby      6.527  (± 0.0%) i/s -     33.000  in   5.082540s
+           this gem      73.511  (± 5.4%) i/s -    371.000  in   5.064868s
+
+Comparison:
+           this gem :       73.5 i/s
+           pure ruby:        6.5 i/s - 11.26x  slower
+```

@@ -27,13 +27,15 @@ end
 
 desc 'Benchmark loading an IDL file'
 task :benchmark do
-  require 'benchmark'
+  require 'benchmark/ips'
   require 'graphql'
   require 'graphql-idl-parser'
 
-  schema = File.read(File.join('ext', 'graphql-idl-parser', 'graphql-idl-parser', 'test', 'github.graphql'))
+  filename = File.join('ext', 'graphql-idl-parser', 'graphql-idl-parser', 'test', 'github.graphql')
 
-  Benchmark.bm(10) do |x|
-    x.report('this-gem: ') { parser = GraphQL::IDLParser.new(schema: schema); parser.process }
+  Benchmark.ips do |x|
+    x.report('pure ruby') { GraphQL.parse_file(filename) }
+    x.report('this gem ') { parser = GraphQL::IDLParser.new(filename: filename); parser.process }
+    x.compare!
   end
 end
