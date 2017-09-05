@@ -25,7 +25,7 @@ Or install it yourself as:
 
 ``` ruby
 # feed it a file
-parser = GraphQL::IDLParser.new(filename: contents)
+parser = GraphQL::IDLParser.new(filename: filename)
 
 # or feed it a string
 parser = GraphQL::IDLParser.new(schema: contents)
