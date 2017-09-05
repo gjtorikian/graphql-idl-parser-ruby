@@ -11,12 +11,13 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'A parser for the GraphQL IDL format.'
   spec.homepage      = 'https://www.github.com/gjtorikian/graphql-idl-parser-ruby'
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{^(test|spec|features)/})
-  end
-  spec.bindir        = 'exe'
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ['lib']
+
+  spec.files         = %w(LICENSE.txt README.md Rakefile graphql-idl-parser.gemspec)
+  spec.files        += Dir.glob('lib/**/*.rb')
+  spec.files        += Dir['ext/**/*'].reject { |f| f =~ /\.o$/ }
+  spec.test_files    = Dir.glob('test/**/*')
+  spec.require_paths = %w(lib ext)
+
   spec.extensions    = ['ext/graphql-idl-parser/extconf.rb']
 
   spec.add_development_dependency 'benchmark-ips'
